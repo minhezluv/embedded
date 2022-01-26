@@ -222,11 +222,11 @@ void Feeding(){
  // while(){
     if(current_weight<weight_tmp){
       myservo1.write(40);  
-    double weight =10;
+    double weight = scale.get_units(10);
     Serial.print("weight: ");
      Serial.println(weight);
     current_weight+= weight;
-        Serial.print("curr: ");
+        Serial.print("curr weight: ");
      Serial.println(current_weight);
     delay(10);
     }else{
