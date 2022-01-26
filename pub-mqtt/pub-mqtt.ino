@@ -159,7 +159,7 @@ void setup() {
     // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
   }
   mess_publish["DevideID"] = devide_ID;
-  
+  connect_to_broker();
 }
 
 // date_time_seconds : thời gian nhận đc từ server
@@ -179,6 +179,7 @@ void callback(char* topic, byte *payload, unsigned int length) {
    for (int i = 0; i < length; i++) {
     messageTemp[i] = (char)payload[i];
   }
+   Serial.println("sub mess: ");
   Serial.println(messageTemp);
     // chuyển mess từ char[] sang đối tượng json 
   deserializeJson(mess_subcribe, messageTemp);
@@ -222,26 +223,28 @@ void Feeding(){
  // while(){
     if(current_weight<weight_tmp){
       myservo1.write(40);  
-    double weight = scale.get_units(10);
+    //double weight = scale.get_units(10);
+    double weight = 10;
     Serial.print("weight: ");
      Serial.println(weight);
     current_weight+= weight;
         Serial.print("curr weight: ");
      Serial.println(current_weight);
-    delay(10);
+    delay(100);
     }else{
+      delay(1000);
       current_weight=0;
       myservo1.write(0);
       isFeed=false;
       isDone=true;
     
         Serial.println("Done");
-          delay(10000);
+          delay(50000);
     }
     
  // }
 }
-void publish(){
+void Publish(){
    DateTime now = rtc.now();
        delay(1000);
     Serial.print("date_time : ");
@@ -263,17 +266,19 @@ void publish(){
 }
 void loop() {
   client.loop();
-  if (!client.connected()) {
-    connect_to_broker();
-  }
+ // if (!client.connected()) {
+   // connect_to_broker();
+  //}
   DateTime now = rtc.now();
  // currentSeconds = now.unixtime();
   
  // delay(1000);
   //Serial.println(currentSeconds);
+  Serial.print("check: ");
   Serial.print(now.hour());
       Serial.print("/");
     Serial.println(now.minute());
+    delay(1000);
   // hàm xử lý cho ăn thủ công 
   if (time_hour==now.hour() &&(time_min==now.minute())&& isTask1 == true ) {
     isFeed=true;
@@ -294,9 +299,9 @@ void loop() {
   }
   if(isFeed==true&& weight_tmp>0) {  
     Feeding();
-  }
+  } 
   if(isDone==true){
-    publish();
+    Publish();
   }
   
   
